@@ -1,0 +1,152 @@
+{
+	"info": {
+		"_postman_id": "e657a959-beaa-4631-a0ad-d569b162ebb1",
+		"name": "Request Chaining",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "AddNewEmployee",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Global variable empIDKey has created\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"   var empId =(jsonData.employeeId);\r",
+							"   pm.globals.set(\"empIdKey\", empId);\r",
+							"});\r",
+							"pm.test(\"Status code is 201 and New Employee added Successfully\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"pm.test(\"Emp name -Checked\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.globals.set(\"empName\", \"Suresh\");\r",
+							"    pm.expect(jsonData.employeeName).to.eql(\r",
+							"        \"{{empName}}\");\r",
+							"});\r",
+							"pm.test(\"Status code name has string\", function () {\r",
+							"    pm.response.to.have.status(\"Created\");\r",
+							"});\r",
+							"pm.test(\"Your test name\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.username).to.eql(\"{{unKey}}\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"\r",
+							"var random = Math.floor((Math.random() * 1000) + 1);\r",
+							"pm.globals.set(\"empName\", \"Suresh\");\r",
+							"pm.globals.set(\"unKey\", \"{{empName}}\" + random);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"designation\": \"TeamLead\",\r\n  \"dob\": \"20/08/1992\",\r\n  \"email\": \"abc@gmail.com\",\r\n  \"empName\": \"{{empName}}\",\r\n  \"experience\": 5,\r\n  \"mobileNo\": \"0987654321\",\r\n  \"project\": \"RMG\",\r\n  \"role\": \"Testing\",\r\n  \"username\": \"{{unKey}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}",
+					"host": [
+						"{{URL}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GeTEmployees",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response time is less than 200ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+							"});\r",
+							"pm.test(\"Successfully fetched the emp details\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 202]);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/:endpoint",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						":endpoint"
+					],
+					"variable": [
+						{
+							"key": "endpoint",
+							"value": "{{empIdKey}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteEmployee",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful Deleted\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([204, 202]);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/:endpoint",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						":endpoint"
+					],
+					"variable": [
+						{
+							"key": "endpoint",
+							"value": "{{empIdKey}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
